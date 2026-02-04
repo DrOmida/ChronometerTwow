@@ -1,4 +1,4 @@
-﻿--<< ====================================================================== >>--
+--<< ====================================================================== >>--
 -- Class Setup                                                                --
 --<< ====================================================================== >>--
 Chronometer = AceLibrary("AceAddon-2.0"):new("AceEvent-2.0", "AceDB-2.0", "AceConsole-2.0", "AceDebug-2.0", "AceHook-2.1", "CandyBar-2.0", "FuBarPlugin-2.0")
@@ -836,32 +836,19 @@ end
 
 function Chronometer:GetTexture(name, record)
 	if record.xn then name = record.xn end
-	record.tx = BS:GetSpellIcon(name)
-	return record.tx
---[[	
+	
 	local i = 1
 	while true do
 		local nm = GetSpellName(i, BOOKTYPE_SPELL)
-		if not nm then break
-		elseif nm == name then
+		if not nm then break end
+		if nm == name then
 			record.tx = GetSpellTexture(i, BOOKTYPE_SPELL)
 			return record.tx
 		end
 		i = i + 1
 	end
-	local tp = self:GetTalentPosition(name)
-	if tp then
-		local _, tx = GetTalentInfo(unpack(tp))
-		record.tx = tx
-		return record.tx
-	end
-	if HasPetSpells() then
-		for i =1, NUM_PET_ACTION_SLOTS do
-			local nm, _, tx = GetPetActionInfo(i)
-			if nm == name then record.tx = tx; return record.tx end
-		end
-	end
-]]
+	
+	return record.tx
 end
 
 function Chronometer:GetTalentPosition(name)
