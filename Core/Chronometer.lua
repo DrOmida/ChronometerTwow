@@ -455,12 +455,10 @@ do
 					v021a = {type = "header", name = "v0.21 - Adimo", order = 5},
 					v021b = {type = "header", name = "Update for rogue poisons and classes.", order = 6},
 					v020a = {type = "header", name = "v0.20 - Adimo", order = 10},
-					v020b = {type = "header", name = "Chronometer Adimo Edition rename.", order = 20},
 					v020c = {type = "header", name = "Rogue poisons support expanded with timers.", order = 30},
 					v020c2 = {type = "header", name = "Charge bars and weapon poison status added.", order = 31},
 					v020d = {type = "header", name = "Taste for Blood and Rupture talent scaling updates.", order = 40},
-					v020e = {type = "header", name = "SpellCache hearthstone crash fix.", order = 50},
-					v020f = {type = "header", name = "Direct icon paths and poison bar color/size improvements.", order = 60},
+					v020f = {type = "header", name = "Direct icon paths for Turtle WoW compatibility.", order = 50},
 				},
 			},
 			fubar = { 

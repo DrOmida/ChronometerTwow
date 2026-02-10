@@ -2123,7 +2123,10 @@ function WaterfallPane.prototype:DoLayout()
 end
 ]]
 function WaterfallPane.prototype:SizeChanged()
-	self:FixScroll()
+	for i, control in ipairs(self.controls) do
+		control:Refresh()
+	end
+	self:DoLayout()
 end
 
 function WaterfallPane.prototype:FixScroll()
@@ -2244,13 +2247,24 @@ function WaterfallLabel.prototype:Refresh()
 	self.frame:SetHeight(self.height or 16)
 	if self.width then
 		self.text:ClearAllPoints()
-		self.text:SetPoint("LEFT",self.frame,"LEFT")
-		self.text:SetPoint("RIGHT",self.frame,"RIGHT")
+		self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
+		self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
 		self:SetWidth(self.width)
 	else
-		self.text:ClearAllPoints()
-		self.text:SetPoint("LEFT",self.frame,"LEFT")
-		self.frame:SetScript("OnUpdate", labelFixWidth)
+		local dynamicWidth
+		if self.parent and self.parent.scrollframe then
+			dynamicWidth = self.parent.scrollframe:GetWidth() - 20
+		end
+		if dynamicWidth and dynamicWidth > 0 then
+			self.text:ClearAllPoints()
+			self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
+			self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
+			self:SetWidth(dynamicWidth)
+		else
+			self.text:ClearAllPoints()
+			self.text:SetPoint("LEFT",self.frame,"LEFT")
+			self.frame:SetScript("OnUpdate", labelFixWidth)
+		end
 	end
 	self.text:SetJustifyH(self.justifyH or "LEFT")
 	self.text:SetTextColor(self.r or 1, self.g or 1, self.b or 1)
@@ -2592,13 +2606,24 @@ function WaterfallHeading.prototype:Refresh()
 	self.frame:SetHeight(self.height or 16)
 	if self.width then
 		self.text:ClearAllPoints()
-		self.text:SetPoint("LEFT",self.frame,"LEFT")
-		self.text:SetPoint("RIGHT",self.frame,"RIGHT")
+		self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
+		self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
 		self:SetWidth(self.width)
 	else
-		self.text:ClearAllPoints()
-		self.text:SetPoint("LEFT",self.frame,"LEFT")
-		self.frame:SetScript("OnUpdate", labelFixWidth)
+		local dynamicWidth
+		if self.parent and self.parent.scrollframe then
+			dynamicWidth = self.parent.scrollframe:GetWidth() - 20
+		end
+		if dynamicWidth and dynamicWidth > 0 then
+			self.text:ClearAllPoints()
+			self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
+			self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
+			self:SetWidth(dynamicWidth)
+		else
+			self.text:ClearAllPoints()
+			self.text:SetPoint("LEFT",self.frame,"LEFT")
+			self.frame:SetScript("OnUpdate", labelFixWidth)
+		end
 	end
 	self.text:SetJustifyH(self.justifyH or "LEFT")
 end
