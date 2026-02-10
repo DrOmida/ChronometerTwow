@@ -776,9 +776,9 @@ function Chronometer:AddTimer(kind, name, duration, targeted, isgain, selforsele
 	if not self.timers[kind]       then self.timers[kind] = {}       end
 	if not self.timers[kind][name] then self.timers[kind][name] = {} end
 	if not extra then extra = {} end
-	targeted = (targeted > 0 ) and 1 or nil
-	isgain = (isgain > 0 ) and 1 or nil
-	selforselect = (selforselect > 0 ) and 1 or nil
+	targeted = ((tonumber(targeted) or 0) > 0) and 1 or nil
+	isgain = ((tonumber(isgain) or 0) > 0) and 1 or nil
+	selforselect = ((tonumber(selforselect) or 0) > 0) and 1 or nil
 	if not extra.cr then
 		if extra.gr and self.groups[extra.gr].cr then extra.cr = self.groups[extra.gr].cr
 		else
