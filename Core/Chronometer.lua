@@ -578,11 +578,13 @@ function Chronometer:OnEnable()
 	
 	self.groups = {}
 	self.timers = {}
+	self.timers[self.SPELL] = {}
+	self.timers[self.EVENT] = {}
 	self.bars = {}
 	for i = 1, 20 do self.bars[i] = {} end
 
-	for k, v in self.dataSetup do
-		v(self)
+	for _, setup in pairs(self.dataSetup) do
+		setup(self)
 	end
 
 	-- On-Kill handling (should disable these when we turn off fadeonkill)
