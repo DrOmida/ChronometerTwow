@@ -968,24 +968,51 @@ function Chronometer.EmptyTimeFormat(t)
 	return ""
 end
 
+function Chronometer:GetWeaponPoisonDetails(slotId)
+	if not slotId then
+		return nil, nil, false
+	end
+	self.gratuity:SetInventoryItem("player", slotId)
+	local poisonName
+	local charges
+	local lines = self.gratuity:GetText(2, 10, nil, true)
+	if lines then
+		for _, line in ipairs(lines) do
+			local text = line[1]
+			if text then
+				if not poisonName and string.find(text, "Poison") then
+					poisonName = text
+				end
+				if not charges and string.find(text, "Charges") then
+					charges = tonumber(string.match(text, "%d+"))
+				end
+			end
+		end
+	end
+	local hasPoison = poisonName ~= nil or self.gratuity:Find("Poison")
+	return poisonName, charges, hasPoison
+end
+
 function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirationMs, slotId)
 	if not timer or not slotId then
 		return
 	end
-	local name = "Weapon Poison"
 	local target = handLabel
-	local id = name.."-"..target
-	self.gratuity:SetInventoryItem("player", slotId)
-	local hasPoison = self.gratuity:Find("Poison")
-	local hasDissolvent = self.gratuity:Find("Dissolvent Poison")
+	local id = "Weapon Poison".."-"..target
+	local poisonName, charges, hasPoison = self:GetWeaponPoisonDetails(slotId)
+	local name = poisonName or "Weapon Poison"
+	local hasDissolvent = poisonName and string.find(poisonName, "Dissolvent Poison") or self.gratuity:Find("Dissolvent Poison")
 	if hasDissolvent then
 		self:StopChargeBar(id)
 		return
 	end
 	local bar = self:FindBarById(id)
 	if not hasPoison then
+		if bar then
+			bar.poisonMax = nil
+		end
 		if not bar then
-			self:StartTimer(timer, name, target)
+			self:StartTimer(timer, "Weapon Poison", target)
 			self:PauseCandyBar(id)
 			bar = self:FindBarById(id)
 		end
@@ -1003,13 +1030,22 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 		expireSeconds = 1
 	end
 	if not bar then
-		self:StartTimer(timer, name, target)
+		self:StartTimer(timer, "Weapon Poison", target)
 		bar = self:FindBarById(id)
+	end
+	if bar then
+		if not bar.poisonMax or expireSeconds > bar.poisonMax then
+			bar.poisonMax = expireSeconds
+		end
+		local maxTime = bar.poisonMax or expireSeconds
+		local pct = maxTime > 0 and (expireSeconds / maxTime) or 0
+		local r = 1 - pct
+		local g = pct
+		self:SetCandyBarColor(id, r, g, 0)
 	end
 	self:SetCandyBarTime(id, expireSeconds)
 	self:SetCandyBarTimeLeft(id, expireSeconds)
-	self:SetCandyBarText(id, self:FormatBarText(name, target, nil, true))
-	self:SetCandyBarColor(id, 0, 1, 0)
+	self:SetCandyBarText(id, self:FormatBarText(name, target, charges and charges > 0 and charges or nil, true))
 	self:SetCandyBarTimeFormat(id, Chronometer.DefaultTimeFormat)
 	self:SetCandyBarReversed(id, false)
 	self:Update(id)
