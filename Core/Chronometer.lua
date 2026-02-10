@@ -1569,15 +1569,22 @@ function Chronometer:TargetUnit(unit)
 end
 
 function Chronometer:OnMouseDown()
+	local hook = self.hooks and self.hooks[WorldFrame] and self.hooks[WorldFrame]["OnMouseDown"]
 	if not self.captive then
-		return self.hooks[WorldFrame]["OnMouseDown"](WorldFrame, arg1)
+		if hook then
+			return hook(WorldFrame, arg1)
+		end
+		return
 	end
 	for k, captive in pairs(self.captive) do
 		if not captive.u and arg1 == "LeftButton" and UnitExists("mouseover") then
 			captive.u = UnitName("mouseover")
 		end
 	end
-	return self.hooks[WorldFrame]["OnMouseDown"](WorldFrame, arg1)
+	if hook then
+		return hook(WorldFrame, arg1)
+	end
+	return
 end
 
 --<< ====================================================================== >>--
