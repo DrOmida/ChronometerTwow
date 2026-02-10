@@ -1543,6 +1543,9 @@ end
 -- Catch Spellcast Target                                                     --
 --<< ====================================================================== >>--
 function Chronometer:SpellTargetUnit(unit)
+	if not self.captive then
+		return self.hooks["SpellTargetUnit"](unit)
+	end
 	for k, captive in pairs(self.captive) do
 		if not captive.u then
 			captive.u = UnitName(unit)
@@ -1552,6 +1555,9 @@ function Chronometer:SpellTargetUnit(unit)
 end
 
 function Chronometer:TargetUnit(unit)
+	if not self.captive then
+		return self.hooks["TargetUnit"](unit)
+	end
 	for k, captive in pairs(self.captive) do
 		if not captive.u then
 			captive.u = UnitName(unit)
@@ -1561,6 +1567,9 @@ function Chronometer:TargetUnit(unit)
 end
 
 function Chronometer:OnMouseDown()
+	if not self.captive then
+		return self.hooks[WorldFrame]["OnMouseDown"](WorldFrame, arg1)
+	end
 	for k, captive in pairs(self.captive) do
 		if not captive.u and arg1 == "LeftButton" and UnitExists("mouseover") then
 			captive.u = UnitName("mouseover")
@@ -1629,6 +1638,9 @@ function Chronometer:SpellStopTargeting()
 end
 
 function Chronometer:SPELL_FAILED(event, info)
+	if not self.captive then
+		return
+	end
 	for k, captive in pairs(self.captive) do
 		if captive.n == info.skill then
 			table.remove(self.captive, k)
