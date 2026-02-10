@@ -984,7 +984,10 @@ function Chronometer:GetWeaponPoisonDetails(slotId)
 					poisonName = text
 				end
 				if not charges and string.find(text, "Charges") then
-					charges = tonumber(string.match(text, "%d+"))
+					local _, _, count = string.find(text, "(%d+)")
+					if count then
+						charges = tonumber(count)
+					end
 				end
 			end
 		end
