@@ -34,8 +34,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Toggles bars for spell durations on the player."] = true,
 	
 	["Only self"] = true,  -- << 0.13
-	["Show No Poison Bars"] = true,
-	["Show bars when no weapon poison is active."] = true,
+	["Hide empty weapons from Chronometer"] = true,
+	["Hide bars when no weapon poison is active."] = true,
 	
 	["Timers"] = true,
 	["Timers visibility options"] = true,
@@ -144,6 +144,8 @@ L:RegisterTranslations("ruRU", function() return {
 	["Toggles bars for spell durations on the player."] = "Вкл/Выкл. полос заклинаний на игроке.",
 	
 	["Only self"] = "Только свои",  -- << 0.13
+	["Hide empty weapons from Chronometer"] = "Скрывать пустое оружие в Chronometer",
+	["Hide bars when no weapon poison is active."] = "Скрывать полосы, когда на оружии нет яда.",
 	
 	["Timers"] = "Таймеры",
 	["Timers visibility options"] = "Настройки отображения таймеров",
