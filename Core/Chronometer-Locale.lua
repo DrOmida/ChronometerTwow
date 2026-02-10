@@ -34,6 +34,8 @@ L:RegisterTranslations("enUS", function() return {
 	["Toggles bars for spell durations on the player."] = true,
 	
 	["Only self"] = true,  -- << 0.13
+	["Show No Poison Bars"] = true,
+	["Show bars when no weapon poison is active."] = true,
 	
 	["Timers"] = true,
 	["Timers visibility options"] = true,

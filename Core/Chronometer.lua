@@ -60,6 +60,7 @@ local defaults = {
 	showText = true,
 	uncolored = true,
 	onlyself = false,
+	showNoPoison = true,
 	disabledSpells = {
 		COMMON = {},
 		RACIAL = {},
@@ -237,6 +238,12 @@ do
 						set = set,
 						passValue = 'onlyself',
 					},
+					nopoison = {
+						name = L["Show No Poison Bars"], desc = L["Show bars when no weapon poison is active."], type = "toggle", order = 80,
+						get = get,
+						set = set,
+						passValue = 'showNoPoison',
+					},
 				},
 			},
 			timers = {
@@ -390,26 +397,26 @@ do
 				name = hcolor.. L["Commands"], desc = L["Commands list"], type = "group", order = 60,
 				args = {
 					header = {type = "header", name = hcolor..L["Commands"], order = 1},
-					cmd1 = {type = "header", name = "/chron config - Shows a GUI configuration for Chronometer", order = 10},
-					cmd2 = {type = "header", name = "/chron anchor - Shows or hides the anchor to which Chronometer's timer bars are attached", order = 20},
-					cmd3 = {type = "header", name = "/chron bar - CandyBar display options", order = 30},
-					cmd4 = {type = "header", name = "/chron bar scale - Sets the scale of Chronometer's timer bars", order = 40},
-					cmd5 = {type = "header", name = "/chron bar growth - If toggled true, Chronometer's bars appear above the anchor and grow upwards. If toggled false, Chronometer's bars appear below the anchor and grow downwards.", order = 50},
-					cmd6 = {type = "header", name = "/chron bar texture - Sets the texture used for the bars", order = 60},
-					cmd7 = {type = "header", name = "/chron bar reverse - Toggles reversing the bars (filling up instead of emptying out).", order = 70},
-					cmd8 = {type = "header", name = "/chron bar bgalpha - Sets the transparency of the bar background.", order = 80},
-					cmd9 = {type = "header", name = "/chron bar bgcolor - Sets the color of the bar background.", order = 90},
-					cmd10 = {type = "header", name = "/chron bar color - Sets the default bar color (may be overridden for certain spells).", order = 100},
-					cmd11 = {type = "header", name = "/chron bar height - Sets the height of the bars.", order = 110},
-					cmd12 = {type = "header", name = "/chron bar text-color - Sets the color of the bar text.", order = 120},
-					cmd13 = {type = "header", name = "/chron bar text-size - Sets the size of the bar text.", order = 130},
-					cmd14 = {type = "header", name = "/chron bar width - Sets the width of the bars.", order = 140},
-					cmd15 = {type = "header", name = "/chron bar text - Sets the text to be displayed on the bar. Use $s for spell name and $t for the target's name.", order = 150},
-					cmd16 = {type = "header", name = "/chron test - Runs some test bars so that you can adjust the other options more easily", order = 160},
-					cmd17 = {type = "header", name = "/chron kill - If toggled true, Chronometer will stop bars when the NPC or player the spell was cast on dies. When there are multiple NPCs with the same name, this becomes very inaccurate, since it has no way of knowing if the one that died was the same one that you cast the spell on initially. If toggled false, deaths will not stop bars.", order = 170},
-					cmd18 = {type = "header", name = "/chron fade - If toggled true, Chronometer will stop bars when the spell fades from the NPC of player it was cast on. As with the kill option, multiple NPCs with the same name will make this option less accurate.", order = 180},
-					cmd19 = {type = "header", name = "/chron ghost - Sets the amount of time that ghost bars stay around. This is useful for seeing which spells have recently faded, and allows you to more easily recast the spell using Chronometer's bar-click functions.", order = 190},
-					cmd20 = {type = "header", name = "/chron self - Toggles bars for spell durations on the player. Some people didn't want to see these, since they already use another add-on like EBB to give them self-buff/de-buff bars.", order = 200},
+					cmd1 = {type = "header", name = "/chron config -\nShows a GUI configuration for Chronometer", order = 10},
+					cmd2 = {type = "header", name = "/chron anchor -\nShows or hides the anchor to which Chronometer's timer bars are attached", order = 20},
+					cmd3 = {type = "header", name = "/chron bar -\nCandyBar display options", order = 30},
+					cmd4 = {type = "header", name = "/chron bar scale -\nSets the scale of Chronometer's timer bars", order = 40},
+					cmd5 = {type = "header", name = "/chron bar growth -\nIf toggled true, Chronometer's bars appear above the anchor and grow upwards. If toggled false, Chronometer's bars appear below the anchor and grow downwards.", order = 50},
+					cmd6 = {type = "header", name = "/chron bar texture -\nSets the texture used for the bars", order = 60},
+					cmd7 = {type = "header", name = "/chron bar reverse -\nToggles reversing the bars (filling up instead of emptying out).", order = 70},
+					cmd8 = {type = "header", name = "/chron bar bgalpha -\nSets the transparency of the bar background.", order = 80},
+					cmd9 = {type = "header", name = "/chron bar bgcolor -\nSets the color of the bar background.", order = 90},
+					cmd10 = {type = "header", name = "/chron bar color -\nSets the default bar color (may be overridden for certain spells).", order = 100},
+					cmd11 = {type = "header", name = "/chron bar height -\nSets the height of the bars.", order = 110},
+					cmd12 = {type = "header", name = "/chron bar text-color -\nSets the color of the bar text.", order = 120},
+					cmd13 = {type = "header", name = "/chron bar text-size -\nSets the size of the bar text.", order = 130},
+					cmd14 = {type = "header", name = "/chron bar width -\nSets the width of the bars.", order = 140},
+					cmd15 = {type = "header", name = "/chron bar text -\nSets the text to be displayed on the bar. Use $s for spell name and $t for the target's name.", order = 150},
+					cmd16 = {type = "header", name = "/chron test -\nRuns some test bars so that you can adjust the other options more easily", order = 160},
+					cmd17 = {type = "header", name = "/chron kill -\nIf toggled true, Chronometer will stop bars when the NPC or player the spell was cast on dies. When there are multiple NPCs with the same name, this becomes very inaccurate, since it has no way of knowing if the one that died was the same one that you cast the spell on initially. If toggled false, deaths will not stop bars.", order = 170},
+					cmd18 = {type = "header", name = "/chron fade -\nIf toggled true, Chronometer will stop bars when the spell fades from the NPC of player it was cast on. As with the kill option, multiple NPCs with the same name will make this option less accurate.", order = 180},
+					cmd19 = {type = "header", name = "/chron ghost -\nSets the amount of time that ghost bars stay around. This is useful for seeing which spells have recently faded, and allows you to more easily recast the spell using Chronometer's bar-click functions.", order = 190},
+					cmd20 = {type = "header", name = "/chron self -\nToggles bars for spell durations on the player. Some people didn't want to see these, since they already use another add-on like EBB to give them self-buff/de-buff bars.", order = 200},
 				},
 			},
 			changelog = {
@@ -417,11 +424,11 @@ do
 				args = {
 					header = {type = "header", name = hcolor..L["Change Log"], order = 1},
 					v020a = {type = "header", name = "v0.20 - Adimo", order = 10},
-					v020b = {type = "header", name = "Chronometer Adimo Edition rename, website update, and credits updates.", order = 20},
-					v020c = {type = "header", name = "Rogue poisons support expanded with timers, charge bars, and weapon poison status.", order = 30},
-					v020d = {type = "header", name = "Taste for Blood and Rupture talent scaling updates.", order = 40},
-					v020e = {type = "header", name = "SpellCache hearthstone crash fix and duplicate profile menu fix.", order = 50},
-					v020f = {type = "header", name = "Direct icon paths and poison bar color/size improvements.", order = 60},
+					v020b = {type = "header", name = "Chronometer Adimo Edition rename,\nwebsite update, and credits updates.", order = 20},
+					v020c = {type = "header", name = "Rogue poisons support expanded with timers,\ncharge bars, and weapon poison status.", order = 30},
+					v020d = {type = "header", name = "Taste for Blood and Rupture talent\nscaling updates.", order = 40},
+					v020e = {type = "header", name = "SpellCache hearthstone crash fix\nand duplicate profile menu fix.", order = 50},
+					v020f = {type = "header", name = "Direct icon paths and poison bar\ncolor/size improvements.", order = 60},
 				},
 			},
 			fubar = { 
@@ -991,6 +998,21 @@ function Chronometer:GetBuffTexture(name)
 	end
 end
 
+function Chronometer:GetItemTextureByName(name)
+	if not name then
+		return
+	end
+	local _, _, _, _, _, _, _, _, _, texture = GetItemInfo(name)
+	return texture
+end
+
+function Chronometer:GetWeaponTexture(slotId)
+	if not slotId then
+		return
+	end
+	return GetInventoryItemTexture("player", slotId)
+end
+
 function Chronometer:GetWeaponPoisonDetails(slotId)
 	if not slotId then
 		return nil, nil, false
@@ -998,6 +1020,7 @@ function Chronometer:GetWeaponPoisonDetails(slotId)
 	self.gratuity:SetInventoryItem("player", slotId)
 	local poisonName
 	local charges
+	local poisonTexture
 	local lines = self.gratuity:GetText(2, 10, nil, true)
 	if lines then
 		for _, line in ipairs(lines) do
@@ -1005,6 +1028,7 @@ function Chronometer:GetWeaponPoisonDetails(slotId)
 			if text then
 				if not poisonName and string.find(text, "Poison") then
 					poisonName = text
+					poisonTexture = self:GetItemTextureByName(poisonName)
 				end
 				if not charges and string.find(text, "Charges") then
 					local _, _, count = string.find(text, "(%d+)")
@@ -1016,7 +1040,7 @@ function Chronometer:GetWeaponPoisonDetails(slotId)
 		end
 	end
 	local hasPoison = poisonName ~= nil or self.gratuity:Find("Poison")
-	return poisonName, charges, hasPoison
+	return poisonName, charges, hasPoison, poisonTexture
 end
 
 function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirationMs, slotId)
@@ -1025,7 +1049,8 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 	end
 	local target = handLabel
 	local id = "Weapon Poison".."-"..target
-	local poisonName, charges, hasPoison = self:GetWeaponPoisonDetails(slotId)
+	local poisonName, charges, hasPoison, poisonTexture = self:GetWeaponPoisonDetails(slotId)
+	local weaponTexture = self:GetWeaponTexture(slotId)
 	local name = poisonName or "Weapon Poison"
 	local hasDissolvent = poisonName and string.find(poisonName, "Dissolvent Poison") or self.gratuity:Find("Dissolvent Poison")
 	if hasDissolvent then
@@ -1034,6 +1059,12 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 	end
 	local bar = self:FindBarById(id)
 	if not hasPoison then
+		if not self.db.profile.showNoPoison then
+			if bar then
+				self:StopChargeBar(id)
+			end
+			return
+		end
 		if bar then
 			bar.poisonMax = nil
 		end
@@ -1048,6 +1079,7 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 		self:SetCandyBarColor(id, 1, 0, 0)
 		self:SetCandyBarTimeFormat(id, Chronometer.EmptyTimeFormat)
 		self:SetCandyBarReversed(id, false)
+		self:SetCandyBarIcon(id, weaponTexture or timer.x.tx)
 		self:Update(id)
 		return
 	end
@@ -1074,6 +1106,7 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 	self:SetCandyBarText(id, self:FormatBarText(name, target, charges and charges > 0 and charges or nil, true))
 	self:SetCandyBarTimeFormat(id, Chronometer.DefaultTimeFormat)
 	self:SetCandyBarReversed(id, false)
+	self:SetCandyBarIcon(id, poisonTexture or self:GetTexture(name, timer.x) or weaponTexture or timer.x.tx)
 	self:Update(id)
 end
 
@@ -1107,25 +1140,28 @@ function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, cha
 	local bar = self:FindBarById(id)
 	if not bar then
 		self:StartTimer(timer, name, target, nil, nil, charges)
-		self:PauseCandyBar(id)
-		self:SetCandyBarTimeFormat(id, Chronometer.DissolventTimeFormat, self, id)
 		bar = self:FindBarById(id)
 	end
 	if charges > maxCharges then
 		charges = maxCharges
 	end
 	local expireSeconds = (expirationMs or 0) / 1000
+	if expireSeconds <= 0 then
+		expireSeconds = 1
+	end
 	if bar then
 		bar.poisonExpireAt = GetTime() + expireSeconds
 	end
 	local pct = maxCharges > 0 and (charges / maxCharges) or 0
 	local r = 1 - pct
 	local g = pct
-	self:SetCandyBarTime(id, maxCharges)
-	self:SetCandyBarTimeLeft(id, charges)
+	self:SetCandyBarTime(id, expireSeconds)
+	self:SetCandyBarTimeLeft(id, expireSeconds)
 	self:SetCandyBarText(id, self:FormatBarText(name, target, charges, true))
 	self:SetCandyBarColor(id, r, g, 0)
+	self:SetCandyBarTimeFormat(id, Chronometer.DissolventTimeFormat, self, id)
 	self:SetCandyBarReversed(id, false)
+	self:SetCandyBarIcon(id, self:GetItemTextureByName(name) or self:GetTexture(name, timer.x) or timer.x.tx)
 	self:Update(id)
 	if bar then
 		bar.stacks = charges
