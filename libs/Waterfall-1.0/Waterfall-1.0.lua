@@ -1,4 +1,4 @@
-﻿--[[
+--[[
 Name: Waterfall-1.0
 Revision: $Revision: 78663 $
 Author(s): Nargiddley (nargiddley@gmail.com)
@@ -4830,8 +4830,9 @@ function WaterfallTreeSection.prototype:CreateLine(index)
 
 	local highlight = line:CreateTexture(nil, "BACKGROUND")
 	line.highlight = highlight
-	highlight:SetTexture("Interface\\QuestFrame\\UI-QuestTitleHighlight")
-	highlight:SetBlendMode("ADD")
+	highlight:SetTexture("Interface\\Buttons\\WHITE8X8")
+	highlight:SetBlendMode("BLEND")
+	highlight:SetVertexColor(1, 1, 1, 0.25)
 	highlight:SetAllPoints(line)
 	highlight:Hide()
 end

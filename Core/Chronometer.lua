@@ -452,14 +452,14 @@ do
 				name = hcolor.. L["Change Log"], desc = L["Change Log"], type = "group", order = 70,
 				args = {
 					header = {type = "header", name = hcolor..L["Change Log"], order = 1},
+					v021a = {type = "header", name = "v0.21 - Adimo", order = 5},
+					v021b = {type = "header", name = "Update for rogue poisons and classes.", order = 6},
 					v020a = {type = "header", name = "v0.20 - Adimo", order = 10},
 					v020b = {type = "header", name = "Chronometer Adimo Edition rename.", order = 20},
-					v020b2 = {type = "header", name = "Website update and credits updates.", order = 21},
 					v020c = {type = "header", name = "Rogue poisons support expanded with timers.", order = 30},
 					v020c2 = {type = "header", name = "Charge bars and weapon poison status added.", order = 31},
 					v020d = {type = "header", name = "Taste for Blood and Rupture talent scaling updates.", order = 40},
 					v020e = {type = "header", name = "SpellCache hearthstone crash fix.", order = 50},
-					v020e2 = {type = "header", name = "Duplicate profile menu fix.", order = 51},
 					v020f = {type = "header", name = "Direct icon paths and poison bar color/size improvements.", order = 60},
 				},
 			},
@@ -569,7 +569,7 @@ function Chronometer:OnInitialize()
 	
 	
 	waterfall:Register('Chronometer', 'aceOptions', options, 'title','Chronometer Options','colorR', 0.5, 'colorG', 0.8, 'colorB', 0.5,
-	'treeLevels', 3)--, 'treeType', "SECTIONS")
+	'treeLevels', 3, 'width', 720)--, 'treeType', "SECTIONS")
 
 	Chronometer:RegisterChatCommand({'/chron', '/chronometer'}, function()
 		waterfall:Open('Chronometer')
@@ -1111,13 +1111,21 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 		self:SetCandyBarColor(id, 1, 0, 0)
 		self:SetCandyBarTimeFormat(id, Chronometer.EmptyTimeFormat)
 		self:SetCandyBarReversed(id, false)
-		self:SetCandyBarIcon(id, weaponTexture or poisonTexture or self:GetTexture(name, timer.x) or timer.x.tx)
+		self:SetCandyBarIcon(id, weaponTexture or self:GetTexture(name, timer.x) or timer.x.tx)
 		self:Update(id)
 		return
 	end
 	local expireSeconds = (expirationMs or 0) / 1000
 	if expireSeconds <= 0 then
-		expireSeconds = 1
+		if bar then
+			local _, time, elapsed = self:CandyBarStatus(id)
+			if time and elapsed then
+				expireSeconds = time - elapsed
+			end
+		end
+		if not expireSeconds or expireSeconds <= 0 then
+			expireSeconds = 1
+		end
 	end
 	if not bar then
 		self:StartTimer(timer, "Weapon Poison", target)
@@ -1138,7 +1146,7 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 	self:SetCandyBarText(id, self:FormatBarText(name, target, charges and charges > 0 and charges or nil, true))
 	self:SetCandyBarTimeFormat(id, Chronometer.DefaultTimeFormat)
 	self:SetCandyBarReversed(id, false)
-	self:SetCandyBarIcon(id, weaponTexture or poisonTexture or self:GetTexture(name, timer.x) or timer.x.tx)
+	self:SetCandyBarIcon(id, weaponTexture or self:GetTexture(name, timer.x) or timer.x.tx)
 	self:Update(id)
 end
 
@@ -1181,6 +1189,7 @@ function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, cha
 	if expireSeconds <= 0 then
 		expireSeconds = 1
 	end
+	local weaponTexture = self:GetWeaponTexture(slotId)
 	if bar then
 		bar.poisonExpireAt = GetTime() + expireSeconds
 	end
@@ -1193,7 +1202,7 @@ function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, cha
 	self:SetCandyBarColor(id, r, g, 0)
 	self:SetCandyBarTimeFormat(id, Chronometer.DissolventTimeFormat, self, id)
 	self:SetCandyBarReversed(id, false)
-	self:SetCandyBarIcon(id, self:GetItemTextureByName(name) or self:GetTexture(name, timer.x) or timer.x.tx)
+	self:SetCandyBarIcon(id, weaponTexture or self:GetTexture(name, timer.x) or timer.x.tx)
 	self:Update(id)
 	if bar then
 		bar.stacks = charges

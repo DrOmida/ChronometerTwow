@@ -1,11 +1,21 @@
-# Chronometer Adimo Edition
-Version: 0.20
-Chronometer with TWoW additions. Still WIP
-Auditors: Adimo
+# Chronometer Adimo Edition ✨
+**Version:** 0.21  
+**Game:** Turtle WoW  
+**Status:** Active development
 
-Remove the "-master" off the end of the folder, .TOC file should be in /Interface/Addons/Chronometer/Chronometer.toc
+Chronometer with TWoW additions for clear, reliable timer tracking. Built on Ace2 with CandyBar for smooth, readable bars.
 
-## Commands
+## ⚡ Highlights
+- Rogue poisons support with charge bars and weapon poison status
+- Talent-based duration scaling where relevant
+- Clean, configurable bar presentation
+
+## 🧭 Install
+1. Remove the “-master” suffix from the folder name.
+2. Place it in `/Interface/AddOns/Chronometer/`.
+3. Ensure `Chronometer.toc` is in that folder.
+
+## 🛠 Commands
 | Command | Description |
 | --- | --- |
 | /chron config | Shows a GUI configuration for Chronometer |
@@ -29,10 +39,16 @@ Remove the "-master" off the end of the folder, .TOC file should be in /Interfac
 | /chron ghost | Sets the amount of time that ghost bars stay around. This is useful for seeing which spells have recently faded, and allows you to more easily recast the spell using Chronometer's bar-click functions. |
 | /chron self | Toggles bars for spell durations on the player. Some people didn't want to see these, since they already use another add-on like EBB to give them self-buff/de-buff bars. |
 
-## Change Log
-- v0.20 - Adimo
-- Chronometer Adimo Edition rename, website update, and credits updates.
-- Rogue poisons support expanded with timers, charge bars, and weapon poison status.
-- Taste for Blood and Rupture talent scaling updates.
-- SpellCache hearthstone crash fix and duplicate profile menu fix.
-- Direct icon paths and poison bar color/size improvements.
+## 🧾 Change Log
+- **v0.21 - Adimo**
+  - Update for rogue poisons and classes.
+- **v0.20 - Adimo**
+  - Chronometer Adimo Edition rename.
+  - Rogue poisons support expanded with timers, charge bars, and weapon poison status.
+  - Taste for Blood and Rupture talent scaling updates.
+  - SpellCache hearthstone crash fix.
+  - Direct icon paths and poison bar color/size improvements.
+
+## 🤝 Contributors
+- Seongya
+- DrOmida
