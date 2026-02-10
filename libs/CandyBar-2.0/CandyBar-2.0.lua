@@ -1326,7 +1326,18 @@ function CandyBar:SetGroupVerticalSpacing(name, spacing)
 end
 
 local mysort = function(a, b)
-	return CandyBar.handlers[a].endtime < CandyBar.handlers[b].endtime
+	local ha = CandyBar.handlers[a]
+	local hb = CandyBar.handlers[b]
+	if not ha then
+		return true
+	end
+	if not hb then
+		return false
+	end
+	if ha.poisonBottom ~= hb.poisonBottom then
+		return not ha.poisonBottom
+	end
+	return ha.endtime < hb.endtime
 end
 function CandyBar:SortGroup(name)
 	local group = CandyBar.groups[name]

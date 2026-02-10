@@ -8,6 +8,7 @@ local BS = AceLibrary("Babble-Spell-2.2")
 local dewdrop = AceLibrary("Dewdrop-2.0")
 local waterfall 		= AceLibrary("Waterfall-1.0")
 local paint 			= AceLibrary("PaintChips-2.0")
+local candybar 			= AceLibrary("CandyBar-2.0")
 local self 				= Chronometer
 
 Chronometer:RegisterDB("ChronometerDB")
@@ -384,6 +385,44 @@ do
 			},
 			
 		},
+			},
+			commands = {
+				name = hcolor.. L["Commands"], desc = L["Commands list"], type = "group", order = 60,
+				args = {
+					header = {type = "header", name = hcolor..L["Commands"], order = 1},
+					cmd1 = {type = "description", name = "/chron config - Shows a GUI configuration for Chronometer", order = 10},
+					cmd2 = {type = "description", name = "/chron anchor - Shows or hides the anchor to which Chronometer's timer bars are attached", order = 20},
+					cmd3 = {type = "description", name = "/chron bar - CandyBar display options", order = 30},
+					cmd4 = {type = "description", name = "/chron bar scale - Sets the scale of Chronometer's timer bars", order = 40},
+					cmd5 = {type = "description", name = "/chron bar growth - If toggled true, Chronometer's bars appear above the anchor and grow upwards. If toggled false, Chronometer's bars appear below the anchor and grow downwards.", order = 50},
+					cmd6 = {type = "description", name = "/chron bar texture - Sets the texture used for the bars", order = 60},
+					cmd7 = {type = "description", name = "/chron bar reverse - Toggles reversing the bars (filling up instead of emptying out).", order = 70},
+					cmd8 = {type = "description", name = "/chron bar bgalpha - Sets the transparency of the bar background.", order = 80},
+					cmd9 = {type = "description", name = "/chron bar bgcolor - Sets the color of the bar background.", order = 90},
+					cmd10 = {type = "description", name = "/chron bar color - Sets the default bar color (may be overridden for certain spells).", order = 100},
+					cmd11 = {type = "description", name = "/chron bar height - Sets the height of the bars.", order = 110},
+					cmd12 = {type = "description", name = "/chron bar text-color - Sets the color of the bar text.", order = 120},
+					cmd13 = {type = "description", name = "/chron bar text-size - Sets the size of the bar text.", order = 130},
+					cmd14 = {type = "description", name = "/chron bar width - Sets the width of the bars.", order = 140},
+					cmd15 = {type = "description", name = "/chron bar text - Sets the text to be displayed on the bar. Use $s for spell name and $t for the target's name.", order = 150},
+					cmd16 = {type = "description", name = "/chron test - Runs some test bars so that you can adjust the other options more easily", order = 160},
+					cmd17 = {type = "description", name = "/chron kill - If toggled true, Chronometer will stop bars when the NPC or player the spell was cast on dies. When there are multiple NPCs with the same name, this becomes very inaccurate, since it has no way of knowing if the one that died was the same one that you cast the spell on initially. If toggled false, deaths will not stop bars.", order = 170},
+					cmd18 = {type = "description", name = "/chron fade - If toggled true, Chronometer will stop bars when the spell fades from the NPC of player it was cast on. As with the kill option, multiple NPCs with the same name will make this option less accurate.", order = 180},
+					cmd19 = {type = "description", name = "/chron ghost - Sets the amount of time that ghost bars stay around. This is useful for seeing which spells have recently faded, and allows you to more easily recast the spell using Chronometer's bar-click functions.", order = 190},
+					cmd20 = {type = "description", name = "/chron self - Toggles bars for spell durations on the player. Some people didn't want to see these, since they already use another add-on like EBB to give them self-buff/de-buff bars.", order = 200},
+				},
+			},
+			changelog = {
+				name = hcolor.. L["Change Log"], desc = L["Change Log"], type = "group", order = 70,
+				args = {
+					header = {type = "header", name = hcolor..L["Change Log"], order = 1},
+					v020a = {type = "description", name = "v0.20 - Adimo", order = 10},
+					v020b = {type = "description", name = "Chronometer Adimo Edition rename, website update, and credits updates.", order = 20},
+					v020c = {type = "description", name = "Rogue poisons support expanded with timers, charge bars, and weapon poison status.", order = 30},
+					v020d = {type = "description", name = "Taste for Blood and Rupture talent scaling updates.", order = 40},
+					v020e = {type = "description", name = "SpellCache hearthstone crash fix and duplicate profile menu fix.", order = 50},
+					v020f = {type = "description", name = "Direct icon paths and poison bar color/size improvements.", order = 60},
+				},
 			},
 			fubar = { 
 				type = "group", name = L["Fubar plugin"], desc = L["Fubar plugin options."], order=-15,
@@ -778,7 +817,7 @@ function Chronometer:HasTasteForBloodTalent()
 	return rank and rank > 0
 end
 
-function Chronometer:StartTasteForBloodTimer()
+function Chronometer:StartTasteForBloodTimer(cp)
 	local timer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Taste for Blood"]
 	if not timer then
 		return
@@ -786,6 +825,11 @@ function Chronometer:StartTasteForBloodTimer()
 	if not self:HasTasteForBloodTalent() then
 		return
 	end
+	local points = cp or 1
+	if points < 1 then
+		points = 1
+	end
+	timer.cp = points
 	self:StartTimer(timer, "Taste for Blood", "none")
 end
 
@@ -850,6 +894,10 @@ function Chronometer:StartTimer(timer, name, target, rank, durmod, stacks)
 	self:SetCandyBarCompletion(id, self.StopBar, self, id)
 	self:SetCandyBarReversed(id, self.db.profile.reverse)
 	self:SetCandyBarOnClick(id, function (...) self:CandyOnClick(unpack(arg)) end, timer.x.rc, timer.x.mc)
+	local handler = candybar and candybar.handlers and candybar.handlers[id]
+	if handler and timer.x.poisonbottom then
+		handler.poisonBottom = true
+	end
 	self:StartCandyBar(id, true)
 end
 
@@ -895,6 +943,86 @@ function Chronometer.DissolventTimeFormat(t, self, id)
 		return string.format("%1.1f", s)
 	else
 		return string.format("%.0f", math.floor(s))
+	end
+end
+
+function Chronometer.DefaultTimeFormat(t)
+	local h = math.floor(t/3600)
+	local m = t - (h*3600)
+	m = math.floor(m/60)
+	local s = t - ((h*3600) + (m*60))
+	if h > 0 then
+		return string.format("%d:%02d", h, m)
+	elseif m > 0 then
+		return string.format("%d:%02d", m, math.floor(s))
+	elseif s < 10 then
+		return string.format("%1.1f", s)
+	else
+		return string.format("%.0f", math.floor(s))
+	end
+end
+
+function Chronometer.EmptyTimeFormat(t)
+	return ""
+end
+
+function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirationMs, slotId)
+	if not timer or not slotId then
+		return
+	end
+	local name = "Weapon Poison"
+	local target = handLabel
+	local id = name.."-"..target
+	self.gratuity:SetInventoryItem("player", slotId)
+	local hasPoison = self.gratuity:Find("Poison")
+	local hasDissolvent = self.gratuity:Find("Dissolvent Poison")
+	if hasDissolvent then
+		self:StopChargeBar(id)
+		return
+	end
+	local bar = self:FindBarById(id)
+	if not hasPoison then
+		if not bar then
+			self:StartTimer(timer, name, target)
+			self:PauseCandyBar(id)
+			bar = self:FindBarById(id)
+		end
+		self:SetCandyBarTime(id, 1)
+		self:SetCandyBarTimeLeft(id, 1)
+		self:SetCandyBarText(id, "No Poison ("..target..")")
+		self:SetCandyBarColor(id, 1, 0, 0)
+		self:SetCandyBarTimeFormat(id, Chronometer.EmptyTimeFormat)
+		self:SetCandyBarReversed(id, false)
+		self:Update(id)
+		return
+	end
+	local expireSeconds = (expirationMs or 0) / 1000
+	if expireSeconds <= 0 then
+		expireSeconds = 1
+	end
+	if not bar then
+		self:StartTimer(timer, name, target)
+		bar = self:FindBarById(id)
+	end
+	self:SetCandyBarTime(id, expireSeconds)
+	self:SetCandyBarTimeLeft(id, expireSeconds)
+	self:SetCandyBarText(id, self:FormatBarText(name, target, nil, true))
+	self:SetCandyBarColor(id, 0, 1, 0)
+	self:SetCandyBarTimeFormat(id, Chronometer.DefaultTimeFormat)
+	self:SetCandyBarReversed(id, false)
+	self:Update(id)
+end
+
+function Chronometer:GetDissolventPoisonTimerForSlot(slotId)
+	if not slotId then
+		return nil
+	end
+	self.gratuity:SetInventoryItem("player", slotId)
+	if self.gratuity:Find("Dissolvent Poison II") then
+		return self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Dissolvent Poison II"], "Dissolvent Poison II"
+	end
+	if self.gratuity:Find("Dissolvent Poison") then
+		return self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Dissolvent Poison"], "Dissolvent Poison"
 	end
 end
 
@@ -945,20 +1073,26 @@ function Chronometer:UpdatePoisonCharges()
 	if class ~= "ROGUE" then
 		return
 	end
-	local timer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Dissolvent Poison II"]
-	local poisonName = "Dissolvent Poison II"
-	if not timer then
-		timer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Dissolvent Poison"]
-		poisonName = "Dissolvent Poison"
-	end
-	if not timer then
-		return
-	end
 	local mh, mhExp, mhCharges, oh, ohExp, ohCharges = GetWeaponEnchantInfo()
 	local mhSlot = GetInventorySlotInfo("MainHandSlot")
 	local ohSlot = GetInventorySlotInfo("SecondaryHandSlot")
-	self:UpdateDissolventChargeBar(timer, "Main Hand", mh, mhCharges, mhExp, mhSlot, poisonName)
-	self:UpdateDissolventChargeBar(timer, "Off Hand", oh, ohCharges, ohExp, ohSlot, poisonName)
+	local poisonTimer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Weapon Poison"]
+	self:UpdateWeaponPoisonBar(poisonTimer, "Main Hand", mh, mhExp, mhSlot)
+	self:UpdateWeaponPoisonBar(poisonTimer, "Off Hand", oh, ohExp, ohSlot)
+	local mhTimer, mhName = self:GetDissolventPoisonTimerForSlot(mhSlot)
+	if mhTimer then
+		self:UpdateDissolventChargeBar(mhTimer, "Main Hand", mh, mhCharges, mhExp, mhSlot, mhName)
+	else
+		self:StopChargeBar("Dissolvent Poison-Main Hand")
+		self:StopChargeBar("Dissolvent Poison II-Main Hand")
+	end
+	local ohTimer, ohName = self:GetDissolventPoisonTimerForSlot(ohSlot)
+	if ohTimer then
+		self:UpdateDissolventChargeBar(ohTimer, "Off Hand", oh, ohCharges, ohExp, ohSlot, ohName)
+	else
+		self:StopChargeBar("Dissolvent Poison-Off Hand")
+		self:StopChargeBar("Dissolvent Poison II-Off Hand")
+	end
 end
 
 function Chronometer:GetDuration(duration, record, rank, cp)
@@ -1458,7 +1592,8 @@ function Chronometer:SPELLCAST_STOP()
 		end
 
 		if captive.n == BS["Rupture"] then
-			self:StartTasteForBloodTimer()
+			local points = captive.t and captive.t.cp
+			self:StartTasteForBloodTimer(points)
 		end
 		if captive.u == "none" then
 	--		self:Print("-_-CP" .. captive.cp)

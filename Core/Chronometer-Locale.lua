@@ -37,6 +37,10 @@ L:RegisterTranslations("enUS", function() return {
 	
 	["Timers"] = true,
 	["Timers visibility options"] = true,
+
+	["Commands"] = true,
+	["Commands list"] = true,
+	["Change Log"] = true,
 	
 	["Class specific timers"] = true,
 	["Class Spells"] = true,
