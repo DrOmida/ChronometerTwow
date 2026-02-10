@@ -218,7 +218,7 @@ function SpellCache:GetSpellNameText(spellName, spellRankNumber)
 	self:argCheck(spellRankNumber, 3, "number", "nil")
 
 	local fullSpellName
-	if (not spellRankNumber) then
+	if (not spellRankNumber) or (not self.FullPattern) then
 		fullSpellName = spellName
 	else
 		fullSpellName = format(self.FullPattern, spellName, spellRankNumber)
@@ -236,7 +236,7 @@ end
 -- Arcane Intellect(Rank 2), Rank 3
 function SpellCache:GetSpellData(spellNameOrId, spellRankNumberOrText)
 	self:argCheck(spellNameOrId, 2, "string", "number")
-	self:argCheck(spellRank, 3, "string", "number", "nil")
+	self:argCheck(spellRankNumberOrText, 3, "string", "number", "nil")
 	self:LevelDebug(2, ">GetSpellData", spellNameOrId, spellRankNumberOrText)
 
 	local sId, sName, sRank

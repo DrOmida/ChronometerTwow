@@ -1,6 +1,6 @@
 ## Interface: 11200
-## Author: Seongya, original: Bhattu with Fixes by: laytya, dein0s
-## X-Credits: Auditors: Adimo
+## Author: Seongya, original: Bhattu. Fixes: Adimo
+## X-Credits:
 ## Title: Chronometer |cff00ff00Adimo|r Edition |cff7fff7f -Ace2-|r
 ## Notes: Chronometer - A Timer Addon for Tracking Buffs and Debuffs with Ease
 ## Notes-ruRU: Chronometer - мод Ace2 таймера на основе AceTimer
@@ -11,7 +11,7 @@
 ## OptionalDeps: Ace2, Babble-2.2, PaintChipsLib, CompostLib, CandyBar, Deformat, GratuityLib, SpellCacheLib, ParserLib, DewdropLib
 ## SavedVariables: ChronometerDB
 
-## X-Website: https://github.com/Judo101/Chronometer-TWoW
+## X-Website: https://github.com/DrOmida/ChronometerTwow
 ## X-Embeds: Ace2, Babble-2.2, PaintChipsLib, CompostLib, CandyBar, Deformat, GratuityLib, SpellCacheLib, ParserLib, DewdropLib
 
 libs\AceLibrary\AceLibrary.lua

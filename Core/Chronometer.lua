@@ -475,11 +475,7 @@ function Chronometer:OnInitialize()
 	
 	for k,v in pairs(t) do
 		if options.args[k] == nil then
-			if k == "profile" then 
-				options.args["aprofile"] = v  
-			else
-				options.args[k] = v
-			end
+			options.args[k] = v
 		end
 	end
 	
@@ -771,6 +767,28 @@ function Chronometer:FormatBarText(name, target, stacks, showname)
 	return text
 end
 
+function Chronometer:HasTasteForBloodTalent()
+	if not self.tasteForBloodTalent then
+		self.tasteForBloodTalent = self:GetTalentPosition("Taste for Blood")
+	end
+	if not self.tasteForBloodTalent then
+		return false
+	end
+	local _, _, _, _, rank = GetTalentInfo(unpack(self.tasteForBloodTalent))
+	return rank and rank > 0
+end
+
+function Chronometer:StartTasteForBloodTimer()
+	local timer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Taste for Blood"]
+	if not timer then
+		return
+	end
+	if not self:HasTasteForBloodTalent() then
+		return
+	end
+	self:StartTimer(timer, "Taste for Blood", "none")
+end
+
 function Chronometer:StartTimer(timer, name, target, rank, durmod, stacks)
 	-- check if spell is disabled
 	local _, class = UnitClass("player")
@@ -880,8 +898,8 @@ function Chronometer.DissolventTimeFormat(t, self, id)
 	end
 end
 
-function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, charges, expirationMs, slotId)
-	local name = "Dissolvent Poison II"
+function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, charges, expirationMs, slotId, poisonName)
+	local name = poisonName or "Dissolvent Poison II"
 	local target = handLabel
 	local id = name.."-"..target
 	if not hasEnchant or not charges or charges <= 0 or not slotId then
@@ -927,14 +945,19 @@ function Chronometer:UpdatePoisonCharges()
 		return
 	end
 	local timer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Dissolvent Poison II"]
+	local poisonName = "Dissolvent Poison II"
+	if not timer then
+		timer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Dissolvent Poison"]
+		poisonName = "Dissolvent Poison"
+	end
 	if not timer then
 		return
 	end
 	local mh, mhExp, mhCharges, oh, ohExp, ohCharges = GetWeaponEnchantInfo()
 	local mhSlot = GetInventorySlotInfo("MainHandSlot")
 	local ohSlot = GetInventorySlotInfo("SecondaryHandSlot")
-	self:UpdateDissolventChargeBar(timer, "Main Hand", mh, mhCharges, mhExp, mhSlot)
-	self:UpdateDissolventChargeBar(timer, "Off Hand", oh, ohCharges, ohExp, ohSlot)
+	self:UpdateDissolventChargeBar(timer, "Main Hand", mh, mhCharges, mhExp, mhSlot, poisonName)
+	self:UpdateDissolventChargeBar(timer, "Off Hand", oh, ohCharges, ohExp, ohSlot, poisonName)
 end
 
 function Chronometer:GetDuration(duration, record, rank, cp)
@@ -1318,12 +1341,16 @@ end
 function Chronometer:UseAction(slot, clicked, onself)
 	if not GetActionText(slot) and HasAction(slot) then
 		self.gratuity:SetAction(slot)
-		spellName = self.gratuity:GetLine(1)
-		spellRank = self.gratuity:GetLine(1, true)
-		local name, _, _, _, rank = self.spellcache:GetSpellData(spellName, spellRank)
-		local timer = self.timers[Chronometer.SPELL][name]
-		if timer then
-			self:CatchSpellcast(timer, name, rank, onself)
+		local spellName = self.gratuity:GetLine(1)
+		local spellRank = self.gratuity:GetLine(1, true)
+		if spellName then
+			local name, _, _, _, rank = self.spellcache:GetSpellData(spellName, spellRank)
+			if name then
+				local timer = self.timers[Chronometer.SPELL][name]
+				if timer then
+					self:CatchSpellcast(timer, name, rank, onself)
+				end
+			end
 		end
 	end
 	return self.hooks["UseAction"](slot, clicked, onself)
@@ -1345,9 +1372,11 @@ end
 
 function Chronometer:CastSpellByName(text, onself)
 	local name, _, _, _, rank = self.spellcache:GetSpellData(text, nil)
-	local timer = self.timers[Chronometer.SPELL][name]
-	if timer then
-		self:CatchSpellcast(timer, name, rank, oneself)
+	if name then
+		local timer = self.timers[Chronometer.SPELL][name]
+		if timer then
+			self:CatchSpellcast(timer, name, rank, oneself)
+		end
 	end
 	return self.hooks["CastSpellByName"](text, onself)
 end
@@ -1427,6 +1456,9 @@ function Chronometer:SPELLCAST_STOP()
 			end
 		end
 
+		if captive.n == BS["Rupture"] then
+			self:StartTasteForBloodTimer()
+		end
 		if captive.u == "none" then
 	--		self:Print("-_-CP" .. captive.cp)
 			self:StartTimer(captive.t,captive.n, captive.u, captive.r)
