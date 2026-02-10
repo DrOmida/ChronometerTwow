@@ -870,6 +870,12 @@ function Chronometer:StartTimer(timer, name, target, rank, durmod, stacks)
 
 	local duration = (timer.x.d and self:GetDuration(timer.d, timer.x.d, rank, timer.cp) or timer.d) + durmod
 	local text = self:FormatBarText(name, target, timer.x.stacks and stacks or nil, timer.x.chargebar)
+	if timer.x.bi then
+		local buffIcon = self:GetBuffTexture(timer.x.xn or name)
+		if buffIcon then
+			timer.x.tx = buffIcon
+		end
+	end
 	local icon = timer.x.tx or self:GetTexture(name, timer.x)
 	local color = timer.x.cr or self.db.profile.barcolor
 	color = convertcolor(color)
@@ -968,6 +974,23 @@ function Chronometer.EmptyTimeFormat(t)
 	return ""
 end
 
+function Chronometer:GetBuffTexture(name)
+	if not name then
+		return
+	end
+	for i = 1, 32 do
+		local texture = UnitBuff("player", i)
+		if not texture then
+			break
+		end
+		self.gratuity:SetUnitBuff("player", i)
+		local buffName = self.gratuity:GetLine(1)
+		if buffName == name then
+			return texture
+		end
+	end
+end
+
 function Chronometer:GetWeaponPoisonDetails(slotId)
 	if not slotId then
 		return nil, nil, false
@@ -1016,9 +1039,9 @@ function Chronometer:UpdateWeaponPoisonBar(timer, handLabel, hasEnchant, expirat
 		end
 		if not bar then
 			self:StartTimer(timer, "Weapon Poison", target)
-			self:PauseCandyBar(id)
 			bar = self:FindBarById(id)
 		end
+		self:PauseCandyBar(id)
 		self:SetCandyBarTime(id, 1)
 		self:SetCandyBarTimeLeft(id, 1)
 		self:SetCandyBarText(id, "No Poison ("..target..")")

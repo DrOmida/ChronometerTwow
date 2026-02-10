@@ -17,7 +17,7 @@ function Chronometer:CommonSetup()
 	self:AddTimer(self.EVENT, BS["Unstable Power"],          	20, 0, 1, 1, { a=1, cr="CYAN", cl="COMMON" })
 	self:AddTimer(self.EVENT, BS["Ephemeral Power"],          	15, 0, 1, 1, { a=1, cr="CYAN", cl="COMMON" })
 	self:AddTimer(self.EVENT, "Mind Quickening",          		20, 0, 1, 1, { a=1, cr="CYAN", cl="COMMON",xn=BS["Critical Mass"]})
-	self:AddTimer(self.EVENT, "Storm's Shroud",          		8, 0, 1, 1, { a=1, cr="GREEN", cl="COMMON" })
+	self:AddTimer(self.EVENT, "Storm's Shroud",          		8, 0, 1, 1, { a=1, cr="GREEN", cl="COMMON", bi=1 })
 end
 
 table.insert(Chronometer.dataSetup, Chronometer.CommonSetup)
