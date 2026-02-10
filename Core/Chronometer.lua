@@ -933,6 +933,7 @@ function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, cha
 	self:SetCandyBarTimeLeft(id, charges)
 	self:SetCandyBarText(id, self:FormatBarText(name, target, charges, true))
 	self:SetCandyBarColor(id, r, g, 0)
+	self:SetCandyBarReversed(id, false)
 	self:Update(id)
 	if bar then
 		bar.stacks = charges
