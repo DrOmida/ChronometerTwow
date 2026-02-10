@@ -45,6 +45,11 @@ function Chronometer:PaladinSetup()
 	self:AddTimer(self.EVENT, BS["Redoubt"],                   10, 0,1,1, { cr="GREEN", a=1 })
 	self:AddTimer(self.EVENT, BS["Vengeance"],                  8, 0,1,1, { cr="GREEN", a=1 })
 	self:AddTimer(self.EVENT, BS["Vindication"],                8, 1,0,0, { cr="RED",  a=1 })
+	self:AddTimer(self.SPELL, BS["Flash of Light"], 0, 1,1,1, { ea={["Spirit of Arathor"]=1} })
+	self:AddTimer(self.SPELL, BS["Holy Light"], 0, 1,1,1, { ea={["Spirit of Arathor"]=1} })
+	self:AddTimer(self.SPELL, BS["Holy Shock"], 0, 1,1,1, { ea={["Spirit of Arathor"]=1} })
+	self:AddTimer(self.EVENT, "Spirit of Arathor", 12, 0,1,1, { cr="GREEN", a=1 })
+	self:AddTimer(self.EVENT, "The Eye of the Dead", 30, 0,1,1, { cr="CYAN", a=1 })
 
 	-- self:AddTimer(A.SKILL, C.HAMMER_OF_WRATH,            5, 0,1,1, { cr="YELLOW" })
 end

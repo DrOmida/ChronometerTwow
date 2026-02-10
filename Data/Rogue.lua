@@ -41,6 +41,6 @@ function Chronometer:RogueSetup()
     self:AddTimer(self.EVENT, BS["Wound Poison"],      15, 1,0,0, { cr="GREEN", a=1 })
     self:AddTimer(self.EVENT, BS["Mind-numbing Poison"],14,1,0,0,{ cr="GREEN", a=1, d={rt={10,12,14}} })
     self:AddTimer(self.EVENT, BS["Crippling Poison"],  12, 1,0,0, { cr="GREEN", a=1 })
-    self:AddTimer(self.EVENT, "Dissolvent Poison II", 115, 0,1,1, { cr="GREEN", a=1, chargebar={max=115} })
+    self:AddTimer(self.EVENT, "Dissolvent Poison II", 115, 0,1,1, { cr="GREEN", a=1, tx="Interface\\Icons\\Ability_PoisonSting", chargebar={max=115} })
 end
 table.insert(Chronometer.dataSetup, Chronometer.RogueSetup)

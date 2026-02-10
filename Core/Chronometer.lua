@@ -854,11 +854,33 @@ function Chronometer:StopChargeBar(id)
 	end
 end
 
-function Chronometer.NoTimeFormat()
-	return ""
+function Chronometer.DissolventTimeFormat(t, self, id)
+	if not self or not id then
+		return ""
+	end
+	local bar = self:FindBarById(id)
+	if not bar or not bar.poisonExpireAt then
+		return ""
+	end
+	local remaining = bar.poisonExpireAt - GetTime()
+	if remaining < 0 then
+		remaining = 0
+	end
+	local h = math.floor(remaining / 3600)
+	local m = math.floor((remaining - (h * 3600)) / 60)
+	local s = remaining - ((h * 3600) + (m * 60))
+	if h > 0 then
+		return string.format("%d:%02d", h, m)
+	elseif m > 0 then
+		return string.format("%d:%02d", m, math.floor(s))
+	elseif s < 10 then
+		return string.format("%1.1f", s)
+	else
+		return string.format("%.0f", math.floor(s))
+	end
 end
 
-function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, charges, slotId)
+function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, charges, expirationMs, slotId)
 	local name = "Dissolvent Poison II"
 	local target = handLabel
 	local id = name.."-"..target
@@ -876,11 +898,23 @@ function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, cha
 	if not bar then
 		self:StartTimer(timer, name, target, nil, nil, charges)
 		self:PauseCandyBar(id)
-		self:SetCandyBarTimeFormat(id, Chronometer.NoTimeFormat)
+		self:SetCandyBarTimeFormat(id, Chronometer.DissolventTimeFormat, self, id)
+		bar = self:FindBarById(id)
 	end
+	if charges > maxCharges then
+		charges = maxCharges
+	end
+	local expireSeconds = (expirationMs or 0) / 1000
+	if bar then
+		bar.poisonExpireAt = GetTime() + expireSeconds
+	end
+	local pct = maxCharges > 0 and (charges / maxCharges) or 0
+	local r = 1 - pct
+	local g = pct
 	self:SetCandyBarTime(id, maxCharges)
 	self:SetCandyBarTimeLeft(id, charges)
 	self:SetCandyBarText(id, self:FormatBarText(name, target, charges, true))
+	self:SetCandyBarColor(id, r, g, 0)
 	self:Update(id)
 	if bar then
 		bar.stacks = charges
@@ -896,11 +930,11 @@ function Chronometer:UpdatePoisonCharges()
 	if not timer then
 		return
 	end
-	local mh, _, mhCharges, oh, _, ohCharges = GetWeaponEnchantInfo()
+	local mh, mhExp, mhCharges, oh, ohExp, ohCharges = GetWeaponEnchantInfo()
 	local mhSlot = GetInventorySlotInfo("MainHandSlot")
 	local ohSlot = GetInventorySlotInfo("SecondaryHandSlot")
-	self:UpdateDissolventChargeBar(timer, "Main Hand", mh, mhCharges, mhSlot)
-	self:UpdateDissolventChargeBar(timer, "Off Hand", oh, ohCharges, ohSlot)
+	self:UpdateDissolventChargeBar(timer, "Main Hand", mh, mhCharges, mhExp, mhSlot)
+	self:UpdateDissolventChargeBar(timer, "Off Hand", oh, ohCharges, ohExp, ohSlot)
 end
 
 function Chronometer:GetDuration(duration, record, rank, cp)
