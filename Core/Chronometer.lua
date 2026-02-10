@@ -569,6 +569,12 @@ function Chronometer:OnEnable()
 	self.parser:RegisterEvent("Chronometer", "CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_BUFFS",  function (event, info) self:SPELL_PERIODIC(event, info) end)
 	self.parser:RegisterEvent("Chronometer", "CHAT_MSG_SPELL_PERIODIC_FRIENDLYPLAYER_DAMAGE", function (event, info) self:SPELL_PERIODIC(event, info) end)
 
+	local _, class = UnitClass("player")
+	if class == "ROGUE" then
+		self:ScheduleRepeatingEvent("ChronometerUpdatePoisonCharges", self.UpdatePoisonCharges, 0.5, self)
+		self:UpdatePoisonCharges()
+	end
+
 	-- Refresh-on-melee hit/crit handling
 	local enableRoM = false
 	for n, t in pairs(self.timers[self.SPELL]) do
@@ -746,7 +752,26 @@ function Chronometer:AddTimer(kind, name, duration, targeted, isgain, selforsele
 	self.timers[kind][name] = { d=duration, k={t=targeted,g=isgain,s=selforselect}, x=extra }
 end
 
-function Chronometer:StartTimer(timer, name, target, rank, durmod)
+function Chronometer:FormatBarText(name, target, stacks, showname)
+	local text
+	if showname then
+		if target and target ~= "none" then
+			text = name.." ("..target..")"
+		else
+			text = name
+		end
+	else
+		text = target == "none" and name or self.db.profile.text
+		text = gsub(text, "$t", target)
+		text = gsub(text, "$s", name)
+	end
+	if stacks and stacks > 0 then
+		text = text.." ("..stacks..")"
+	end
+	return text
+end
+
+function Chronometer:StartTimer(timer, name, target, rank, durmod, stacks)
 	-- check if spell is disabled
 	local _, class = UnitClass("player")
 	local timer_class = timer.x.cl == nil and class or timer.x.cl
@@ -777,11 +802,10 @@ function Chronometer:StartTimer(timer, name, target, rank, durmod)
 	self.bars[slot].rank   = rank
 	self.bars[slot].target = target
 	self.bars[slot].group  = timer.x.gr
+	self.bars[slot].stacks = timer.x.stacks and stacks or nil
 
 	local duration = (timer.x.d and self:GetDuration(timer.d, timer.x.d, rank, timer.cp) or timer.d) + durmod
-	local text = target == "none" and name or self.db.profile.text
-	text = gsub(text, "$t", target)
-	text = gsub(text, "$s", name)
+	local text = self:FormatBarText(name, target, timer.x.stacks and stacks or nil, timer.x.chargebar)
 	local icon = timer.x.tx or self:GetTexture(name, timer.x)
 	local color = timer.x.cr or self.db.profile.barcolor
 	color = convertcolor(color)
@@ -809,6 +833,74 @@ function Chronometer:StartTimer(timer, name, target, rank, durmod)
 	self:SetCandyBarReversed(id, self.db.profile.reverse)
 	self:SetCandyBarOnClick(id, function (...) self:CandyOnClick(unpack(arg)) end, timer.x.rc, timer.x.mc)
 	self:StartCandyBar(id, true)
+end
+
+function Chronometer:FindBarById(id)
+	for i = 1, 20 do
+		if self.bars[i].id == id then
+			return self.bars[i]
+		end
+	end
+end
+
+function Chronometer:StopChargeBar(id)
+	for i = 1, 20 do
+		if self.bars[i].id == id then
+			self:SetCandyBarFade(id, 0.5, true)
+			self:StopCandyBar(id)
+			self:StopBar(id)
+			return
+		end
+	end
+end
+
+function Chronometer.NoTimeFormat()
+	return ""
+end
+
+function Chronometer:UpdateDissolventChargeBar(timer, handLabel, hasEnchant, charges, slotId)
+	local name = "Dissolvent Poison II"
+	local target = handLabel
+	local id = name.."-"..target
+	if not hasEnchant or not charges or charges <= 0 or not slotId then
+		self:StopChargeBar(id)
+		return
+	end
+	self.gratuity:SetInventoryItem("player", slotId)
+	if not self.gratuity:Find("Dissolvent Poison") then
+		self:StopChargeBar(id)
+		return
+	end
+	local maxCharges = timer.x.chargebar and timer.x.chargebar.max or charges
+	local bar = self:FindBarById(id)
+	if not bar then
+		self:StartTimer(timer, name, target, nil, nil, charges)
+		self:PauseCandyBar(id)
+		self:SetCandyBarTimeFormat(id, Chronometer.NoTimeFormat)
+	end
+	self:SetCandyBarTime(id, maxCharges)
+	self:SetCandyBarTimeLeft(id, charges)
+	self:SetCandyBarText(id, self:FormatBarText(name, target, charges, true))
+	self:Update(id)
+	if bar then
+		bar.stacks = charges
+	end
+end
+
+function Chronometer:UpdatePoisonCharges()
+	local _, class = UnitClass("player")
+	if class ~= "ROGUE" then
+		return
+	end
+	local timer = self.timers and self.timers[self.EVENT] and self.timers[self.EVENT]["Dissolvent Poison II"]
+	if not timer then
+		return
+	end
+	local mh, _, mhCharges, oh, _, ohCharges = GetWeaponEnchantInfo()
+	local mhSlot = GetInventorySlotInfo("MainHandSlot")
+	local ohSlot = GetInventorySlotInfo("SecondaryHandSlot")
+	self:UpdateDissolventChargeBar(timer, "Main Hand", mh, mhCharges, mhSlot)
+	self:UpdateDissolventChargeBar(timer, "Off Hand", oh, ohCharges, ohSlot)
 end
 
 function Chronometer:GetDuration(duration, record, rank, cp)
@@ -1116,6 +1208,10 @@ function Chronometer:SPELL_PERIODIC(event, info)
 		unit = info.victim
 	end
 	aura = info.skill
+	local stacks = info.amountRank
+	if stacks then
+		stacks = tonumber(stacks) or tonumber(string.match(stacks, "%d+"))
+	end
 	_, _, rank = string.find(aura,"%s([IVX]+)[^u]")
 	if rank then
 		rank = latins[rank]
@@ -1139,7 +1235,7 @@ function Chronometer:SPELL_PERIODIC(event, info)
 			if not timer.k.s or not unit then unit = "none" else return end
 		end
 		timer.v = nil; timer.t = nil;
-		self:StartTimer(timer, aura, unit, rank)
+		self:StartTimer(timer, aura, unit, rank, nil, timer.x.stacks and stacks or nil)
 	elseif timer and  info.isDOT and not timer.x.a then
 		timer.v = nil; timer.t = nil;
 		self:StartTimer(timer, aura, "none")

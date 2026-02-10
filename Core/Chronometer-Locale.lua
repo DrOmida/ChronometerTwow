@@ -1,10 +1,10 @@
-﻿local L = AceLibrary("AceLocale-2.2"):new("Chronometer")
+local L = AceLibrary("AceLocale-2.2"):new("Chronometer")
 
 L:RegisterTranslations("enUS", function() return {
-	["Chronometer"] = true,
-	["Chronometer - an Ace2 Timer Mod"] = true,
+	["Chronometer"] = "Chronometer |cff00ff00Adimo|r Edition",
+	["Chronometer - an Ace2 Timer Mod"] = "Chronometer |cff00ff00Adimo|r Edition - an Ace2 Timer Mod",
 
-	["Chronometer Options"]= true, -- 0.13
+	["Chronometer Options"]= "Chronometer |cff00ff00Adimo|r Edition Options", -- 0.13
 
 	["General"] =true,
 	["General options"] = true,
@@ -105,10 +105,10 @@ L:RegisterTranslations("enUS", function() return {
 } end)
 
 L:RegisterTranslations("ruRU", function() return {
-	["Chronometer"] = "Chronometer",
-	["Chronometer - an Ace2 Timer Mod"] = "Chronometer - Ace2 таймер мод",
+	["Chronometer"] = "Chronometer |cff00ff00Adimo|r Edition",
+	["Chronometer - an Ace2 Timer Mod"] = "Chronometer |cff00ff00Adimo|r Edition - Ace2 таймер мод",
 
-	["Chronometer Options"]= "Настройки Chronometer",
+	["Chronometer Options"]= "Настройки Chronometer |cff00ff00Adimo|r Edition",
 
 	["General"] = "Основное",
 	["General options"] = "Основные настройки",
@@ -453,7 +453,7 @@ L:RegisterTranslations("koKR", function() return {
 
 L:RegisterTranslations("zhCN", function() return {
 	--["Chronometer"] = true,
-	["Chronometer - an Ace2 Timer Mod"] = "Chronometer - ACE2计时条插件",
+	["Chronometer - an Ace2 Timer Mod"] = "Chronometer |cff00ff00Adimo|r Edition - ACE2计时条插件",
 
 	--["General"] = "Основное",
 	--["General options"] = "Основные настройки",

@@ -1,6 +1,7 @@
-﻿## Interface: 11200
+## Interface: 11200
 ## Author: Seongya, original: Bhattu with Fixes by: laytya, dein0s
-## Title: Chronometer |cff7fff7f -Ace2-|r
+## X-Credits: Auditors: Adimo
+## Title: Chronometer |cff00ff00Adimo|r Edition |cff7fff7f -Ace2-|r
 ## Notes: Chronometer - A Timer Addon for Tracking Buffs and Debuffs with Ease
 ## Notes-ruRU: Chronometer - мод Ace2 таймера на основе AceTimer
 ## Notes-zhCN: Chronometer - 基于AceTimer的Ace2计时条插件
