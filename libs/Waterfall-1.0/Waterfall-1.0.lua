@@ -55,6 +55,7 @@ elseif GetLocale() == "ruRU" then
 end
 
 local DEFAULT_CONTROL_WIDTH = 180
+Waterfall.useLegacySizing = false
 --[[
 local print = Sea.io.print
 local function printTable(table,rowname,level)
@@ -2244,27 +2245,32 @@ function WaterfallLabel.prototype:CleanUp()
 end
 
 function WaterfallLabel.prototype:Refresh()
-	self.frame:SetHeight(self.height or 16)
-	if self.width then
-		self.text:ClearAllPoints()
-		self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
-		self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
-		self:SetWidth(self.width)
-	else
-		local dynamicWidth
-		if self.parent and self.parent.scrollframe then
-			dynamicWidth = self.parent.scrollframe:GetWidth() - 20
-		end
+	local minHeight = self.height or 16
+	local width = self.width
+	if not width and not Waterfall.useLegacySizing and self.parent and self.parent.scrollframe then
+		local dynamicWidth = self.parent.scrollframe:GetWidth() - 20
 		if dynamicWidth and dynamicWidth > 0 then
-			self.text:ClearAllPoints()
-			self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
-			self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
-			self:SetWidth(dynamicWidth)
-		else
-			self.text:ClearAllPoints()
-			self.text:SetPoint("LEFT",self.frame,"LEFT")
-			self.frame:SetScript("OnUpdate", labelFixWidth)
+			width = dynamicWidth
 		end
+	end
+	if width then
+		self.text:ClearAllPoints()
+		self.text:SetPoint("TOPLEFT",self.frame,"TOPLEFT",4,0)
+		self.text:SetPoint("TOPRIGHT",self.frame,"TOPRIGHT",-4,0)
+		self.text:SetNonSpaceWrap(true)
+		self.text:SetJustifyV("TOP")
+		self.text:SetWidth(width - 8)
+		self:SetWidth(width)
+		local height = self.text:GetStringHeight() + 6
+		if height < minHeight then
+			height = minHeight
+		end
+		self.frame:SetHeight(height)
+	else
+		self.frame:SetHeight(minHeight)
+		self.text:ClearAllPoints()
+		self.text:SetPoint("LEFT",self.frame,"LEFT")
+		self.frame:SetScript("OnUpdate", labelFixWidth)
 	end
 	self.text:SetJustifyH(self.justifyH or "LEFT")
 	self.text:SetTextColor(self.r or 1, self.g or 1, self.b or 1)
@@ -2603,27 +2609,32 @@ function WaterfallHeading.prototype:CleanUp()
 end
 
 function WaterfallHeading.prototype:Refresh()
-	self.frame:SetHeight(self.height or 16)
-	if self.width then
-		self.text:ClearAllPoints()
-		self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
-		self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
-		self:SetWidth(self.width)
-	else
-		local dynamicWidth
-		if self.parent and self.parent.scrollframe then
-			dynamicWidth = self.parent.scrollframe:GetWidth() - 20
-		end
+	local minHeight = self.height or 16
+	local width = self.width
+	if not width and not Waterfall.useLegacySizing and self.parent and self.parent.scrollframe then
+		local dynamicWidth = self.parent.scrollframe:GetWidth() - 20
 		if dynamicWidth and dynamicWidth > 0 then
-			self.text:ClearAllPoints()
-			self.text:SetPoint("LEFT",self.frame,"LEFT",4,0)
-			self.text:SetPoint("RIGHT",self.frame,"RIGHT",-4,0)
-			self:SetWidth(dynamicWidth)
-		else
-			self.text:ClearAllPoints()
-			self.text:SetPoint("LEFT",self.frame,"LEFT")
-			self.frame:SetScript("OnUpdate", labelFixWidth)
+			width = dynamicWidth
 		end
+	end
+	if width then
+		self.text:ClearAllPoints()
+		self.text:SetPoint("TOPLEFT",self.frame,"TOPLEFT",4,0)
+		self.text:SetPoint("TOPRIGHT",self.frame,"TOPRIGHT",-4,0)
+		self.text:SetNonSpaceWrap(true)
+		self.text:SetJustifyV("TOP")
+		self.text:SetWidth(width - 8)
+		self:SetWidth(width)
+		local height = self.text:GetStringHeight() + 6
+		if height < minHeight then
+			height = minHeight
+		end
+		self.frame:SetHeight(height)
+	else
+		self.frame:SetHeight(minHeight)
+		self.text:ClearAllPoints()
+		self.text:SetPoint("LEFT",self.frame,"LEFT")
+		self.frame:SetScript("OnUpdate", labelFixWidth)
 	end
 	self.text:SetJustifyH(self.justifyH or "LEFT")
 end
