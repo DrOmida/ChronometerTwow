@@ -122,6 +122,9 @@ do
 		return newObj
 	end
 	function releaseObj(obj,class)
+		if not obj then
+			return
+		end
 		if not class then
 			class = obj.class
 		end
