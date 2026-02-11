@@ -2230,6 +2230,19 @@ local function labelFixWidth()
 	this:SetScript("OnUpdate",nil)
 end
 
+local function getTextHeight(text, minHeight)
+	local height
+	if text and text.GetStringHeight then
+		height = text:GetStringHeight()
+	elseif text then
+		height = text:GetHeight()
+	end
+	if not height or height <= 0 then
+		height = minHeight
+	end
+	return height
+end
+
 function WaterfallLabel.prototype:SetText(text)
 	self.text:SetText(text)
 	self:Refresh()
@@ -2264,7 +2277,7 @@ function WaterfallLabel.prototype:Refresh()
 		self.text:SetJustifyV("TOP")
 		self.text:SetWidth(width - 8)
 		self:SetWidth(width)
-		local height = self.text:GetStringHeight() + 6
+		local height = getTextHeight(self.text, minHeight) + 6
 		if height < minHeight then
 			height = minHeight
 		end
@@ -2628,7 +2641,7 @@ function WaterfallHeading.prototype:Refresh()
 		self.text:SetJustifyV("TOP")
 		self.text:SetWidth(width - 8)
 		self:SetWidth(width)
-		local height = self.text:GetStringHeight() + 6
+		local height = getTextHeight(self.text, minHeight) + 6
 		if height < minHeight then
 			height = minHeight
 		end
