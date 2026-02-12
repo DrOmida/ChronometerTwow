@@ -1248,10 +1248,12 @@ function Chronometer:GetDuration(duration, record, rank, cp)
 	
 	if record.tn then
 		if type(record.tn) == "string" then record.tn = self:GetTalentPosition(record.tn) end
-		local _,_,_,_, tr = GetTalentInfo(unpack(record.tn))
-		if tr > 0 then
-			local gain = record.tt and record.tt[tr] or (record.tb + (tr-1) * (record.ts or record.tb))
-			duration = duration + (record.tp and (duration/100) * gain or gain)
+		if type(record.tn) == "table" then
+			local _,_,_,_, tr = GetTalentInfo(unpack(record.tn))
+			if tr > 0 then
+				local gain = record.tt and record.tt[tr] or (record.tb + (tr-1) * (record.ts or record.tb))
+				duration = duration + (record.tp and (duration/100) * gain or gain)
+			end
 		end
 	end
 	return duration
